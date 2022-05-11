@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Hello World! </title>
+</head>
+<body>
+
+
+        <form method="post">
+            {% csrf_token %}
+            <h1>Регистрация:</h1>
+            <p>{{ form }}</p><br>
+            <input type="submit" value="Создать аккаунт">
+        </form>
+
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    {% for x in dialog %}
+        <p1> {{ x }} </p1><br>
+    {% endfor  %}
+
+
+    <script>
+
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + window.location.pathname
+        );
+
+        console.log(chatSocket)
+
+
+
+    </script>
+
+
+</body>
+</html>
