@@ -15,19 +15,35 @@ class Example(APIView):
 
 
 def account_view(request, *args, **kwargs):
-    context = {}
-    user_id = kwargs.get("user_id")
-    account = User.objects.get(pk=user_id)
-    if account:
-        context['id'] = account.id
-        context['username'] = account.username
-        context['email'] = account.email
-    else:
-        print('ЗРАДА')
+    if request.method == 'GET':
+        context = {}
+        auth_user = request.user.username
+        user_id = kwargs.get("user_id")
+        account = User.objects.get(pk=user_id)
 
-    print(Message.objects.filter(chat_room='2'))
+        if account:
+            context['id'] = account.id
+            context['username'] = account.username
+            context['email'] = account.email
+            if auth_user != account:
+                context['not_self'] = True
+        else:
+            print('ЗРАДА')
 
-    #print(Message.objects.all())
-    #Dialog.objects.create(user1=request.user.id, user2=account)
+        return render(request, "profile_info/info.html", context)
 
-    return render(request, "profile_info/info.html", context)
+
+def create_room(request, *args, **kwargs):
+    # if request.method == 'POST':
+    #     print(args, kwargs)
+    #     context = {}
+    #     auth_user = request.user.username
+    #     user_id = kwargs.get("user_id")
+    #     account = User.objects.get(pk=user_id)
+    #
+    #     if auth_user != account:
+    #         new_chat = Dialog.objects.create(user1=request.user.username, user2=account)
+    #         print(new_chat.id)
+    print(args, kwargs)
+
+    return render(request, "chatroom/new_room.html")

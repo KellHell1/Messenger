@@ -17,14 +17,22 @@ def chat_room_view(request, *args, **kwargs):
     return render(request, "chatroom/room.html", context)
 
 
-
-
-
-#def create_chat(request, *args, **kwargs):
-#    context = {}
-#    user_id = kwargs.get("user_id")
-#    user2 = User.objects.get(pk=user_id)
-#    user1 = request.user.id
+# def create_chat(request, *args, **kwargs):
+#
+#         context = {}
+#         auth_user = request.user.username
+#         user_id = kwargs.get("user_id")
+#         account = User.objects.get(pk=user_id)
+#
+#         if auth_user != account:
+#             new_chat = Dialog.objects.create(user1=request.user.username, user2=account)
+#             id_dialog = new_chat.id
+#
+#             context = {
+#                 "dialog_id": id_dialog,
+#             }
+#
+#         return render(request, "chatroom/room.html", context)
 
 
 

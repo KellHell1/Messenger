@@ -15,5 +15,16 @@
     {{ username }}</h1>
     {% endif %}
 
+    {% if not_self is True %}
+
+    <div class="create_chat">
+        <form method="post">
+            <a href="{% url 'create_room' username %}">Создать чат</a>.
+            {% csrf_token %}<br>
+        </form>
+    </div>
+
+    {% endif %}
+
 </body>
 </html>
