@@ -15,21 +15,25 @@
     {{ username }}</h1>
     {% endif %}
 
-    {% if not_self is True and active_room == True %}
 
-    <div class="to_room">
-            <a href="{% url 'chatroom' room %}"> Перейти в чат </a>.
-    </div>
+    {% if not_self == True and active_room == True %}
+            <a href="{% url 'chatroom' room %}"> Перейти в чат </a>.</br>
+    {% endif %}
+
+
+    {% if not_self == True and active_room == False %}
+            <a href="{% url 'create_room' username %}">Создать чат</a>.</br>
+    {% endif %}
+
+    {% if not_self == True and friend_request == False %}
+            <a href="{% url 'send_friend_request' username %}">Отправить заявку в друзья</a>.</br>
+    {% elif not_self == True and friend_request == True %}
+            <h1>Заявка в друзья отправлена</h1>
 
     {% endif %}
 
-    {% if not_self is True and active_room == False %}
-
-    <div class="create_chat">
-            <a href="{% url 'create_room' username %}">Создать чат</a>.
-    </div>
-
+    {% if not_self == False %}
+        {{ request_to_self }}
     {% endif %}
-
 </body>
 </html>

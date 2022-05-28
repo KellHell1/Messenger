@@ -4,11 +4,12 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from chatroom.models import Dialog, Message
+from friends.models import FriendRequest, Friend
 from chatroom.views import chat_room_view
 
 
 class Example(APIView):
-    #permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     pass
 
     def get(self, request):
@@ -25,25 +26,39 @@ def account_view(request, *args, **kwargs):
         context['id'] = account.id
         context['username'] = account.username
         context['email'] = account.email
-        if auth_user != account:
+
+        if auth_user != account.username:
             context['not_self'] = True
 
+            try:
+                if FriendRequest.objects.get(sender=User.objects.get(username=auth_user),
+                                             receiver=User.objects.get(username=account.username)) or \
+                        FriendRequest.objects.get(sender=User.objects.get(username=account.username),
+                                                  receiver=User.objects.get(username=auth_user)):
+                    context['friend_request'] = True
+            except:
+                context['friend_request'] = False
+
             if Dialog.objects.filter(user1=auth_user, user2=account.username).exists():
-                x = Dialog.objects.get(user1=auth_user, user2=account.username)
+                check_dialog = Dialog.objects.get(user1=auth_user, user2=account.username)
                 context['active_room'] = True
-                context['room'] = x.id
-
+                context['room'] = check_dialog.id
             elif Dialog.objects.filter(user2=auth_user, user1=account.username).exists():
-                y = Dialog.objects.get(user1=auth_user, user2=account.username)
+                check_dialog = Dialog.objects.get(user1=auth_user, user2=account.username)
                 context['active_room'] = True
-                context['room'] = y.id
-
+                context['room'] = check_dialog.id
+                if FriendRequest.objects.filter(sender=auth_user, receiver=account.username) or \
+                        FriendRequest.objects.filter(sender=account.username, receiver=auth_user):
+                    context['friend_request'] = True
+                else:
+                    context['friend_request'] = False
             else:
                 context['active_room'] = False
-
+        else:
+            context['not_self'] = False
+            context['request_to_self'] = FriendRequest.objects.get(receiver=User.objects.get(username=auth_user))
     else:
         print('ЗРАДА')
-
     return render(request, "profile_info/info.html", context)
 
 
@@ -53,6 +68,6 @@ def create_room(request, *args, **kwargs):
 
     if user1 != user2:
         new_chat = Dialog.objects.create(user1=user1, user2=user2)
-        q = new_chat.id
+        room = new_chat.id
 
-        return redirect(f"http://127.0.0.1:8000/room/{q}/")
+        return redirect(f"http://127.0.0.1:8000/room/{room}/")

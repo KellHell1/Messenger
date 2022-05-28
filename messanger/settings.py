@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'profile_info',
     'jwt_auth',
     'chatroom',
+    'friends',
     'rest_framework_simplejwt',
     'rest_framework',
     'channels',

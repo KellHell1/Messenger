@@ -6,4 +6,5 @@ urlpatterns = [
     path('', include('profile_info.urls')),
     path('', include('jwt_auth.urls')),
     path('', include('chatroom.urls')),
+    path('', include('friends.urls')),
 ]
