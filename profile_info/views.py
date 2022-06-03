@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from chatroom.models import Dialog, Message
-from friends.models import FriendRequest, Friend
+from friends.models import FriendRequest, FriendList
 from chatroom.views import chat_room_view
 
 

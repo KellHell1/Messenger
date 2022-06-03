@@ -8,11 +8,14 @@
 
 <body>
 
-<h1> {% for elem in friends %} </h1>
+<h1> {% for elem in friend_list %} </h1>
         {{ elem }}</br>
      {% endfor %}
 
-<h1> {{ request_list }} </h1>
+<h1> {% for elem in request_list %} </h1>
+        {{ elem }}</br>
+        <a href="{% url 'accept' elem.id %}"> Принять </a>.</br>
+     {% endfor %}
 
 </body>
 </html>
