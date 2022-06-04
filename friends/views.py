@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import FriendRequest, FriendList
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def send_friend_request(request, *args, **kwargs):
@@ -31,18 +32,39 @@ def friends_and_request(request):
 
 def accept(request, *args, **kwargs):
 
-    b = (kwargs.get('id'))
-    a = FriendRequest.objects.get(id=b)
-    x = FriendList.objects.get(list_of=request.user)
-    x.friend_list.add(a.sender)
-    print(x)
-    print('aa')
+    request_id = (kwargs.get('id'))
+    request_obj = FriendRequest.objects.get(id=request_id)
 
+    try:
+        receiver_friends = FriendList.objects.get(list_of=request_obj.receiver)
+        receiver_friends.friend_list.add(request_obj.sender)
+    except ObjectDoesNotExist:
+        FriendList.objects.create(list_of=request_obj.receiver)
+        receiver_friends = FriendList.objects.get(list_of=request_obj.receiver)
+        receiver_friends.friend_list.add(request_obj.sender)
 
+    try:
+        FriendList.objects.get(list_of=request_obj.sender)
+        sender_friends = FriendList.objects.get(list_of=request_obj.sender)
+        sender_friends.friend_list.add(request_obj.receiver)
+    except ObjectDoesNotExist:
+        FriendList.objects.create(list_of=request_obj.sender)
+        FriendList.objects.get(list_of=request_obj.sender)
+        sender_friends = FriendList.objects.get(list_of=request_obj.sender)
+        sender_friends.friend_list.add(request_obj.receiver)
 
     return redirect('http://127.0.0.1:8000/friends_and_request/')
 
 
+def decline(request, *args, **kwargs):
+    request_id = (kwargs.get('id'))
+    FriendRequest.objects.filter(id=request_id).delete()
+
+    return redirect('http://127.0.0.1:8000/friends_and_request/')
+
+
+def remove(request, *args, **kwargs):
+    pass
 
 
 
