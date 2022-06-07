@@ -25,11 +25,13 @@
             <a href="{% url 'create_room' username %}">Создать чат</a>.</br>
     {% endif %}
 
-    {% if not_self == True and friend_request == False %}
+    {% if not_self == True and friend_request == False and friend == False %}
             <a href="{% url 'send_friend_request' username %}">Отправить заявку в друзья</a>.</br>
-    {% elif not_self == True and friend_request == True %}
+    {% elif not_self == True and friend_request == True and friend == False %}
             <h1>Заявка в друзья отправлена</h1>
-
+    {% elif not_self == True and friend == True %}
+            <h1>Вы в друзьях</h1>
+            <a href="{% url 'remove' id %}">Удалить из друзей</a>.</br>
     {% endif %}
 
     {% if not_self == False %}

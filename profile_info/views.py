@@ -31,6 +31,11 @@ def account_view(request, *args, **kwargs):
             context['not_self'] = True
 
             try:
+                context['friend'] = FriendList.objects.filter(list_of=User.objects.get(username=auth_user), friend_list=account).exists()
+            except:
+                context['friend'] = False
+
+            try:
                 if FriendRequest.objects.get(sender=User.objects.get(username=auth_user),
                                              receiver=User.objects.get(username=account.username)) or \
                         FriendRequest.objects.get(sender=User.objects.get(username=account.username),
@@ -56,7 +61,10 @@ def account_view(request, *args, **kwargs):
                 context['active_room'] = False
         else:
             context['not_self'] = False
-            context['request_to_self'] = FriendRequest.objects.get(receiver=User.objects.get(username=auth_user))
+            try:
+                context['request_to_self'] = FriendRequest.objects.get(receiver=User.objects.get(username=auth_user))
+            except:
+                context['request_to_self'] = False
     else:
         print('ЗРАДА')
     return render(request, "profile_info/info.html", context)

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import send_friend_request, friends_and_request, accept, decline
+from .views import send_friend_request, friends_and_request, accept, decline, remove
 
 
 urlpatterns = [
@@ -8,4 +8,5 @@ urlpatterns = [
     path('friends_and_request/', friends_and_request, name='friends_and_request'),
     path('accept/<int:id>', accept, name='accept'),
     path('decline/<int:id>', decline, name='decline'),
+    path('remove/<int:id>', remove, name='remove')
 ]

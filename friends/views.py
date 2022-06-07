@@ -16,8 +16,6 @@ def send_friend_request(request, *args, **kwargs):
 
 
 def friends_and_request(request):
-
-    context = {}
     auth_user = User.objects.get(username=request.user.username)
     friends = FriendList.objects.filter(list_of=auth_user)
     request_list = list(FriendRequest.objects.filter(receiver=auth_user))
@@ -53,6 +51,8 @@ def accept(request, *args, **kwargs):
         sender_friends = FriendList.objects.get(list_of=request_obj.sender)
         sender_friends.friend_list.add(request_obj.receiver)
 
+    FriendRequest.objects.filter(id=request_id).delete()
+
     return redirect('http://127.0.0.1:8000/friends_and_request/')
 
 
@@ -64,8 +64,12 @@ def decline(request, *args, **kwargs):
 
 
 def remove(request, *args, **kwargs):
-    pass
 
+    remove_friend = User.objects.get(id=kwargs.get('id'))
+    FriendList.objects.filter(friend_list=remove_friend).delete()
+    FriendList.objects.filter(list_of=remove_friend, friend_list=request.user).delete()
+
+    return redirect(f'http://127.0.0.1:8000/{remove_friend.id}/')
 
 
 
