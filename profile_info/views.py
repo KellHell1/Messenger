@@ -1,22 +1,20 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from rest_framework.views import APIView
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from chatroom.models import Dialog, Message
 from friends.models import FriendRequest, FriendList
 from chatroom.views import chat_room_view
+from rest_framework.authentication import BaseAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
-class Example(APIView):
-    # permission_classes = [IsAuthenticated]
-    pass
-
-    def get(self, request):
-        return render(request, 'info.html')
-
-
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def account_view(request, *args, **kwargs):
+    # print(JWTAuthentication.get_header(self=JWTAuthentication, request=request))
     context = {}
     auth_user = request.user.username
     user_id = kwargs.get("user_id")
@@ -67,6 +65,7 @@ def account_view(request, *args, **kwargs):
                 context['request_to_self'] = False
     else:
         print('ЗРАДА')
+    print(context)
     return render(request, "profile_info/info.html", context)
 
 

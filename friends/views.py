@@ -1,37 +1,49 @@
 from django.shortcuts import render, redirect
+from rest_framework.permissions import IsAuthenticated
 from .models import FriendRequest, FriendList
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from .serializers import FriendRequestSerializer, FriendListSerializer
+from rest_framework.decorators import permission_classes, api_view
+from collections import OrderedDict
+import json
 
 
-def send_friend_request(request, *args, **kwargs):
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_friend_request(request, username):
 
-    sender = request.user
-    receiver = User.objects.get(username=kwargs.get('username'))
+    a = FriendRequest.objects.create(sender=request.user, receiver=User.objects.get(username=username))
 
-    if sender and receiver:
-        FriendRequest.objects.create(sender=sender, receiver=receiver)
+    serializer = FriendRequestSerializer(FriendRequest.objects.filter(id=a.id), many=True)
 
-        return redirect(f"http://127.0.0.1:8000/{receiver.id}/")
+    print(serializer.data)
+
+    return HttpResponse({json.dumps(serializer.data, ensure_ascii=False).encode('utf8')})
+
+    # return redirect(f"http://127.0.0.1:8000/{receiver.id}/")
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def friends_and_request(request):
-    auth_user = User.objects.get(username=request.user.username)
-    friends = FriendList.objects.filter(list_of=auth_user)
-    request_list = list(FriendRequest.objects.filter(receiver=auth_user))
+    friends = FriendList.objects.filter(list_of=request.user)
+    request_list = FriendRequest.objects.filter(receiver=request.user)
 
-    context = {
-        'friend_list': friends,
-        'request_list': request_list,
-    }
+    serializer_request = FriendRequestSerializer(request_list, many=True)
+    b = serializer_request.data
+    serializer_friends = FriendListSerializer(friends, many=True)
+    a = serializer_friends.data
 
-    return render(request, 'friends/friends_and_request.html', context)
+    return HttpResponse({json.dumps(a, ensure_ascii=False).encode('utf8'),
+                        json.dumps(b, ensure_ascii=False).encode('utf8')})
 
 
-def accept(request, *args, **kwargs):
-
-    request_id = (kwargs.get('id'))
-    request_obj = FriendRequest.objects.get(id=request_id)
+def accept(request, id):
+    request_obj = FriendRequest.objects.get(id=id)
 
     try:
         receiver_friends = FriendList.objects.get(list_of=request_obj.receiver)
@@ -51,26 +63,20 @@ def accept(request, *args, **kwargs):
         sender_friends = FriendList.objects.get(list_of=request_obj.sender)
         sender_friends.friend_list.add(request_obj.receiver)
 
-    FriendRequest.objects.filter(id=request_id).delete()
+    FriendRequest.objects.filter(id=id).delete()
 
     return redirect('http://127.0.0.1:8000/friends_and_request/')
 
 
-def decline(request, *args, **kwargs):
-    request_id = (kwargs.get('id'))
-    FriendRequest.objects.filter(id=request_id).delete()
+def decline(request, id):
+    FriendRequest.objects.filter(id=id).delete()
 
     return redirect('http://127.0.0.1:8000/friends_and_request/')
 
 
-def remove(request, *args, **kwargs):
-
-    remove_friend = User.objects.get(id=kwargs.get('id'))
+def remove(request, id):
+    remove_friend = User.objects.get(id=id)
     FriendList.objects.filter(friend_list=remove_friend).delete()
     FriendList.objects.filter(list_of=remove_friend, friend_list=request.user).delete()
 
-    return redirect(f'http://127.0.0.1:8000/{remove_friend.id}/')
-
-
-
-
+    return redirect(f'http://127.0.0.1:8000/{id}/')

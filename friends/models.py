@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 
 
 class FriendList(models.Model):
-    list_of = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE)
-    friend_list = models.ManyToManyField(User, blank=True, related_name='friends')
+    list_of = models.OneToOneField(User, related_name='list_of', on_delete=models.CASCADE)
+    friend_list = models.ManyToManyField(User, blank=True, related_name='friend_list')
 
     def __str__(self):
         return f"{self.list_of.username}:" + ", ".join([str(p) for p in self.friend_list.all()])
