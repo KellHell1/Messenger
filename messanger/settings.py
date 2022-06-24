@@ -105,7 +105,7 @@ ASGI_APPLICATION = "messanger.asgi.application"
 DATABASES={
    'default':{
       'ENGINE':'django.db.backends.postgresql_psycopg2',
-      'NAME':'messanger',
+      'NAME':'social',
       'USER':'postgres',
       'PASSWORD':'13579',
       'HOST':'localhost',

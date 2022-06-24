@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
-
 from friends.models import FriendRequest, FriendList
 from django.contrib.auth.models import User
 

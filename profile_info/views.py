@@ -7,8 +7,9 @@ from django.contrib.auth.models import User
 from chatroom.models import Dialog, Message
 from friends.models import FriendRequest, FriendList
 from chatroom.views import chat_room_view
-from rest_framework.authentication import BaseAuthentication
 from rest_framework_simplejwt.authentication import JWTAuthentication
+import json
+from django.core.exceptions import ObjectDoesNotExist
 
 
 @api_view(['GET'])
@@ -30,7 +31,7 @@ def account_view(request, *args, **kwargs):
 
             try:
                 context['friend'] = FriendList.objects.filter(list_of=User.objects.get(username=auth_user), friend_list=account).exists()
-            except:
+            except ObjectDoesNotExist:
                 context['friend'] = False
 
             try:
@@ -39,15 +40,15 @@ def account_view(request, *args, **kwargs):
                         FriendRequest.objects.get(sender=User.objects.get(username=account.username),
                                                   receiver=User.objects.get(username=auth_user)):
                     context['friend_request'] = True
-            except:
+            except ObjectDoesNotExist:
                 context['friend_request'] = False
 
-            if Dialog.objects.filter(user1=auth_user, user2=account.username).exists():
-                check_dialog = Dialog.objects.get(user1=auth_user, user2=account.username)
+            if Dialog.objects.filter(user1=User.objects.get(username=auth_user), user2=account).exists():
+                check_dialog = Dialog.objects.get(user1=User.objects.get(username=auth_user), user2=account)
                 context['active_room'] = True
                 context['room'] = check_dialog.id
-            elif Dialog.objects.filter(user2=auth_user, user1=account.username).exists():
-                check_dialog = Dialog.objects.get(user1=auth_user, user2=account.username)
+            elif Dialog.objects.filter(user2=User.objects.get(username=auth_user), user1=account).exists():
+                check_dialog = Dialog.objects.get(user1=User.objects.get(username=auth_user), user2=account)
                 context['active_room'] = True
                 context['room'] = check_dialog.id
                 if FriendRequest.objects.filter(sender=auth_user, receiver=account.username) or \
@@ -61,20 +62,9 @@ def account_view(request, *args, **kwargs):
             context['not_self'] = False
             try:
                 context['request_to_self'] = FriendRequest.objects.get(receiver=User.objects.get(username=auth_user))
-            except:
+            except ObjectDoesNotExist:
                 context['request_to_self'] = False
     else:
         print('ЗРАДА')
-    print(context)
-    return render(request, "profile_info/info.html", context)
 
-
-def create_room(request, *args, **kwargs):
-    user1 = request.user.username
-    user2 = kwargs.get("username")
-
-    if user1 != user2:
-        new_chat = Dialog.objects.create(user1=user1, user2=user2)
-        room = new_chat.id
-
-        return redirect(f"http://127.0.0.1:8000/room/{room}/")
+    return HttpResponse(json.dumps(context))

@@ -15,16 +15,10 @@ import json
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def send_friend_request(request, username):
-
     a = FriendRequest.objects.create(sender=request.user, receiver=User.objects.get(username=username))
-
     serializer = FriendRequestSerializer(FriendRequest.objects.filter(id=a.id), many=True)
 
-    print(serializer.data)
-
     return HttpResponse({json.dumps(serializer.data, ensure_ascii=False).encode('utf8')})
-
-    # return redirect(f"http://127.0.0.1:8000/{receiver.id}/")
 
 
 @api_view(['GET'])
@@ -32,14 +26,11 @@ def send_friend_request(request, username):
 def friends_and_request(request):
     friends = FriendList.objects.filter(list_of=request.user)
     request_list = FriendRequest.objects.filter(receiver=request.user)
-
     serializer_request = FriendRequestSerializer(request_list, many=True)
-    b = serializer_request.data
     serializer_friends = FriendListSerializer(friends, many=True)
-    a = serializer_friends.data
 
-    return HttpResponse({json.dumps(a, ensure_ascii=False).encode('utf8'),
-                        json.dumps(b, ensure_ascii=False).encode('utf8')})
+    return HttpResponse({json.dumps(serializer_request.data, ensure_ascii=False).encode('utf8'),
+                        json.dumps(serializer_friends.data, ensure_ascii=False).encode('utf8')})
 
 
 def accept(request, id):
