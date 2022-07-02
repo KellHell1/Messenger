@@ -7,9 +7,10 @@ from django.contrib.auth.models import User
 from chatroom.models import Dialog, Message
 from friends.models import FriendRequest, FriendList
 from chatroom.views import chat_room_view
-from rest_framework_simplejwt.authentication import JWTAuthentication
 import json
 from django.core.exceptions import ObjectDoesNotExist
+from .serializers import ImageProfileSerializer
+from .models import ImageProfile
 
 
 @api_view(['GET'])
@@ -60,10 +61,9 @@ def account_view(request, *args, **kwargs):
                 context['active_room'] = False
         else:
             context['not_self'] = False
-            try:
-                context['request_to_self'] = FriendRequest.objects.get(receiver=User.objects.get(username=auth_user))
-            except ObjectDoesNotExist:
-                context['request_to_self'] = False
+            # image = ImageProfile.objects.get(owner=request.user)
+            # img = ImageProfileSerializer(image)
+
     else:
         print('ЗРАДА')
 
