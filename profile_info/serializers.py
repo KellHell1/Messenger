@@ -3,9 +3,8 @@ from .models import ImageProfile
 from django.contrib.auth.models import User
 
 
-class ImageProfileSerializer(serializers.ImageField):
-    image = serializers.ImageField()
+class ImageProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ImageProfile
-        fields = ['image']
+        fields = ('owner', 'image')

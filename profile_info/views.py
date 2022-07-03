@@ -11,6 +11,7 @@ import json
 from django.core.exceptions import ObjectDoesNotExist
 from .serializers import ImageProfileSerializer
 from .models import ImageProfile
+import base64
 
 
 @api_view(['GET'])
@@ -28,7 +29,13 @@ def account_view(request, *args, **kwargs):
         context['email'] = account.email
 
         if auth_user != account.username:
-            context['not_self'] = True
+            try:
+                context['not_self'] = True
+                image_model = ImageProfile.objects.get(owner=account)
+                image = ImageProfileSerializer(image_model)
+                context['image'] = image.data
+            except ObjectDoesNotExist:
+                context['image'] = None
 
             try:
                 context['friend'] = FriendList.objects.filter(list_of=User.objects.get(username=auth_user), friend_list=account).exists()
@@ -61,9 +68,9 @@ def account_view(request, *args, **kwargs):
                 context['active_room'] = False
         else:
             context['not_self'] = False
-            # image = ImageProfile.objects.get(owner=request.user)
-            # img = ImageProfileSerializer(image)
-
+            image_model = ImageProfile.objects.get(owner=request.user)
+            image = ImageProfileSerializer(image_model)
+            context['image'] = image.data
     else:
         print('ЗРАДА')
 
