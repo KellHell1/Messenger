@@ -1,8 +1,12 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django import forms
+from .serializers import UserSerializer
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
+@csrf_exempt
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(label='Your name', min_length=3, max_length=13)
     email = forms.EmailField()

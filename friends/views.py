@@ -1,21 +1,22 @@
-from django.shortcuts import render, redirect
-from rest_framework.permissions import IsAuthenticated
-from .models import FriendRequest, FriendList
+import json
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from .serializers import FriendRequestSerializer, FriendListSerializer
 from rest_framework.decorators import permission_classes, api_view
-from collections import OrderedDict
-import json
+from rest_framework.permissions import IsAuthenticated
+
+from .models import FriendRequest, FriendList
+from .serializers import FriendRequestSerializer, FriendListSerializer
 
 
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def send_friend_request(request, username):
-    a = FriendRequest.objects.create(sender=request.user, receiver=User.objects.get(username=username))
+def send_friend_request(request, id):
+    sender = request.user
+    a = FriendRequest.objects.create(sender=sender, receiver=User.objects.get(id=id))
     serializer = FriendRequestSerializer(FriendRequest.objects.filter(id=a.id), many=True)
 
     return HttpResponse({json.dumps(serializer.data, ensure_ascii=False).encode('utf8')})
@@ -33,6 +34,9 @@ def friends_and_request(request):
                         json.dumps(serializer_friends.data, ensure_ascii=False).encode('utf8')})
 
 
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def accept(request, id):
     request_obj = FriendRequest.objects.get(id=id)
 
@@ -56,18 +60,24 @@ def accept(request, id):
 
     FriendRequest.objects.filter(id=id).delete()
 
-    return redirect('http://127.0.0.1:8000/friends_and_request/')
+    return HttpResponse('Friend request accept')
 
 
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def decline(request, id):
     FriendRequest.objects.filter(id=id).delete()
 
-    return redirect('http://127.0.0.1:8000/friends_and_request/')
+    return HttpResponse('Friend request decline')
 
 
+@csrf_exempt
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def remove(request, id):
     remove_friend = User.objects.get(id=id)
     FriendList.objects.filter(friend_list=remove_friend).delete()
     FriendList.objects.filter(list_of=remove_friend, friend_list=request.user).delete()
 
-    return redirect(f'http://127.0.0.1:8000/{id}/')
+    return HttpResponse('Friend remove')

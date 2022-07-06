@@ -4,7 +4,7 @@ from .views import send_friend_request, friends_and_request, accept, decline, re
 
 
 urlpatterns = [
-    path('send_friend_request/<str:username>/', send_friend_request, name='send_friend_request'),
+    path('send_friend_request/<int:id>/', send_friend_request, name='send_friend_request'),
     path('friends_and_request/', friends_and_request, name='friends_and_request'),
     path('accept/<int:id>', accept, name='accept'),
     path('decline/<int:id>', decline, name='decline'),

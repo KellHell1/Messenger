@@ -1,23 +1,21 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+import json
+
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
-from chatroom.models import Dialog, Message
+
+from chatroom.models import Dialog
 from friends.models import FriendRequest, FriendList
-from chatroom.views import chat_room_view
-import json
-from django.core.exceptions import ObjectDoesNotExist
-from .serializers import ImageProfileSerializer
 from .models import ImageProfile
-import base64
+from .serializers import ImageProfileSerializer
+from jwt_auth.serializers import UserSerializer
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def account_view(request, *args, **kwargs):
-    # print(JWTAuthentication.get_header(self=JWTAuthentication, request=request))
     context = {}
     auth_user = request.user.username
     user_id = kwargs.get("user_id")
@@ -38,7 +36,8 @@ def account_view(request, *args, **kwargs):
                 context['image'] = None
 
             try:
-                context['friend'] = FriendList.objects.filter(list_of=User.objects.get(username=auth_user), friend_list=account).exists()
+                context['friend'] = FriendList.objects.filter(list_of=User.objects.get(username=auth_user),
+                                                              friend_list=account).exists()
             except ObjectDoesNotExist:
                 context['friend'] = False
 
@@ -75,3 +74,15 @@ def account_view(request, *args, **kwargs):
         print('ЗРАДА')
 
     return HttpResponse(json.dumps(context))
+
+
+def search_user(request, username):
+    try:
+        result = User.objects.filter(username=username)
+        serializer_result = UserSerializer(result, many=True)
+
+        return HttpResponse(json.dumps(serializer_result.data))
+
+    except ObjectDoesNotExist:
+
+        return HttpResponse("User does not exist")
