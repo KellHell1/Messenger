@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 
@@ -22,6 +23,10 @@ def send_friend_request(request, id):
     return HttpResponse({json.dumps(serializer.data, ensure_ascii=False).encode('utf8')})
 
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="just got a list"
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def friends_and_request(request):
