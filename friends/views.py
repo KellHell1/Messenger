@@ -7,11 +7,17 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg import openapi
 
 from .models import FriendRequest, FriendList
 from .serializers import FriendRequestSerializer, FriendListSerializer
 
 
+@swagger_auto_schema(
+    method='post',
+    responses={201: FriendRequestSerializer},
+    operation_description="Send friend request by id of user",
+    )
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -25,7 +31,7 @@ def send_friend_request(request, id):
 
 @swagger_auto_schema(
     method='get',
-    operation_description="just got a list"
+    operation_description="just got a list of friend-requests and friends of auth user",
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -39,6 +45,10 @@ def friends_and_request(request):
                         json.dumps(serializer_friends.data, ensure_ascii=False).encode('utf8')})
 
 
+@swagger_auto_schema(
+    method='POST',
+    operation_description="Accept friend request by id of request",
+    )
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -68,6 +78,10 @@ def accept(request, id):
     return HttpResponse('Friend request accept')
 
 
+@swagger_auto_schema(
+    method='DELETE',
+    operation_description="Decline friend request by id of request",
+    )
 @csrf_exempt
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
@@ -77,6 +91,10 @@ def decline(request, id):
     return HttpResponse('Friend request decline')
 
 
+@swagger_auto_schema(
+    method='DELETE',
+    operation_description="Friend remove by id of user",
+    )
 @csrf_exempt
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])

@@ -11,11 +11,17 @@ from friends.models import FriendRequest, FriendList
 from .models import ImageProfile
 from .serializers import ImageProfileSerializer
 from jwt_auth.serializers import UserSerializer
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="get info of user by user-id",
+    )
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def account_view(request, *args, **kwargs):
+def account_view(request, **kwargs):
     context = {}
     auth_user = request.user.username
     user_id = kwargs.get("user_id")
@@ -76,6 +82,12 @@ def account_view(request, *args, **kwargs):
     return HttpResponse(json.dumps(context))
 
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="search user by user-id",
+    responses={200: UserSerializer},
+    )
+@api_view(['GET'])
 def search_user(request, username):
     try:
         result = User.objects.filter(username=username)

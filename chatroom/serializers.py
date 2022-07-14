@@ -11,7 +11,7 @@ class DialogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Dialog
-        fields = ['user1', 'user2']
+        fields = ['id', 'user1', 'user2']
 
 
 class MessageSerializer(serializers.ModelSerializer):

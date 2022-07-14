@@ -7,8 +7,14 @@ from .models import Dialog, Message
 from django.db import models
 from .serializers import DialogSerializer, MessageSerializer
 import json
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
+@swagger_auto_schema(
+    method='get',
+    operation_description="get info of chat members and chat room messages by dialog_id(room)",
+    )
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def chat_room_view(request, **kwargs):
@@ -20,6 +26,11 @@ def chat_room_view(request, **kwargs):
                          json.dumps(messages.data)})
 
 
+@swagger_auto_schema(
+    method='post',
+    operation_description="create chat room with user by user_id",
+    responses={201: DialogSerializer}
+    )
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_room(request, **kwargs):
