@@ -12,6 +12,20 @@
     <input id="chat-message-submit" type="button" value="Send">
 
 
+     #myBtn {
+      background-color: #9C27B0;
+      color: white;
+      padding: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      width: 250px;
+      margin: 20px 200px;
+      }
+      <button id="myBtn">Кликни по мне</button>
+
+
     <script>
 
 
@@ -45,6 +59,15 @@
             }));
             messageInputDom.value = '';
         };
+
+      const buttonElem = document.getElementById('myBtn');
+        let onButtonClick = function() {
+        const x = 'клик';
+        chatSocket.send(JSON.stringify({
+                'message': x,
+            }));
+        }
+        buttonElem.addEventListener('click', onButtonClick);
 
     </script>
 

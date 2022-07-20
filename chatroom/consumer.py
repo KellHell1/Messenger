@@ -37,7 +37,7 @@ class ChatConsumer(WebsocketConsumer):
         message = event['message']
 
         Message.objects.create(
-            chat_room=Dialog.objects.get(pk=self.scope['url_route']['kwargs']['room']),
+            dialog=Dialog.objects.get(pk=self.scope['url_route']['kwargs']['room']),
             author=author,
             content=message
         )

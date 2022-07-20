@@ -1,15 +1,16 @@
 import json
 
-from django.shortcuts import render
-from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status
-from rest_framework.decorators import api_view
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from .forms import CustomUserCreationForm
-from .serializers import UserSerializer
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import api_view
+from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.renderers import JSONRenderer
+
+from .serializers import UserSerializer, UpdateUserSerializer
 
 
 @swagger_auto_schema(
@@ -39,3 +40,20 @@ def register(request):
         serializer_user = UserSerializer(user)
 
         return HttpResponse(json.dumps(serializer_user.data))
+
+
+class UserUpdate(RetrieveUpdateAPIView):
+    model = User
+    serializer_class = UpdateUserSerializer
+    queryset = User.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+
+def logout(request):
+    logout(request)
+    return HttpResponse("logout success")

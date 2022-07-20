@@ -31,18 +31,31 @@ def send_friend_request(request, id):
 
 @swagger_auto_schema(
     method='get',
-    operation_description="just got a list of friend-requests and friends of auth user",
+    responses={200: FriendListSerializer},
+    operation_description="just got a friends list of auth user",
 )
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def friends_and_request(request):
+def my_friends(request):
     friends = FriendList.objects.filter(list_of=request.user)
-    request_list = FriendRequest.objects.filter(receiver=request.user)
-    serializer_request = FriendRequestSerializer(request_list, many=True)
+
     serializer_friends = FriendListSerializer(friends, many=True)
 
-    return HttpResponse({json.dumps(serializer_request.data, ensure_ascii=False).encode('utf8'),
-                        json.dumps(serializer_friends.data, ensure_ascii=False).encode('utf8')})
+    return HttpResponse({json.dumps(serializer_friends.data, ensure_ascii=False).encode('utf8')})
+
+
+@swagger_auto_schema(
+    method='get',
+    responses={200: FriendRequestSerializer},
+    operation_description="got a list of friend-requests to auth user",
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def my_friend_request(request):
+    request_list = FriendRequest.objects.filter(receiver=request.user)
+    serializer_request = FriendRequestSerializer(request_list, many=True)
+
+    return HttpResponse({json.dumps(serializer_request.data, ensure_ascii=False).encode('utf8')})
 
 
 @swagger_auto_schema(
