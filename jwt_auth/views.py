@@ -6,11 +6,13 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import status, generics
 from rest_framework.decorators import api_view
 from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 
-from .serializers import UserSerializer, UpdateUserSerializer
+from .serializers import UserSerializer, ChangePasswordSerializer
 
 
 @swagger_auto_schema(
@@ -42,16 +44,34 @@ def register(request):
         return HttpResponse(json.dumps(serializer_user.data))
 
 
-class UserUpdate(RetrieveUpdateAPIView):
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
     model = User
-    serializer_class = UpdateUserSerializer
-    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+    def get_object(self, queryset=None):
+        obj = self.request.user
+        return obj
 
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+    def update(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            if not self.object.check_password(serializer.data.get("old_password")):
+                return HttpResponse({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
+            self.object.set_password(serializer.data.get("new_password"))
+            self.object.save()
+            response = {
+                'status': 'success',
+                'code': status.HTTP_200_OK,
+                'message': 'Password updated successfully',
+                'data': []
+            }
+
+            return HttpResponse(json.dumps(response))
+
+        return HttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def logout(request):

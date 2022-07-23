@@ -9,9 +9,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UpdateUserSerializer(serializers.ModelSerializer):
+class ChangePasswordSerializer(serializers.Serializer):
+    model = User
 
-    class Meta:
-        model = User
-        fields = ['username', 'first_name']
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
 

@@ -7,4 +7,4 @@ class ImageProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ImageProfile
-        fields = ('owner', 'image')
+        fields = ('id', 'owner', 'image')

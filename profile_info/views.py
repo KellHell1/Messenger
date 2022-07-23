@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from rest_framework.decorators import permission_classes, api_view
+from rest_framework.generics import UpdateAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from chatroom.models import Dialog
@@ -98,3 +99,17 @@ def search_user(request, username):
     except ObjectDoesNotExist:
 
         return HttpResponse("User does not exist")
+
+
+def set_image(request):
+    pass
+
+
+class AddImage(CreateAPIView):
+    serializer_class = ImageProfileSerializer
+    queryset = ImageProfile.objects.all()
+
+
+class ChangeImage(UpdateAPIView):
+    serializer_class = ImageProfileSerializer
+    queryset = ImageProfile.objects.all()
