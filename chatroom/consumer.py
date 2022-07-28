@@ -23,14 +23,29 @@ class ChatConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message
-            }
-        )
+        if text_data_json['event'] == 'message':
+            message = text_data_json['message']
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message
+                }
+            )
+        elif text_data_json['event'] == 'tp':
+            message = text_data_json['message']
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'typing',
+                    'message': message
+                }
+            )
+
+    def typing(self, event):
+        self.send(text_data=json.dumps({
+            'typing': 'is typing',
+        }))
 
     def chat_message(self, event):
         author = self.scope['user']

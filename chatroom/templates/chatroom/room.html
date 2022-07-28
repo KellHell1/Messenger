@@ -11,21 +11,6 @@
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
 
-
-     #myBtn {
-      background-color: #9C27B0;
-      color: white;
-      padding: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-      width: 250px;
-      margin: 20px 200px;
-      }
-      <button id="myBtn">Кликни по мне</button>
-
-
     <script>
 
 
@@ -35,9 +20,22 @@
             + window.location.pathname
         );
 
+
+
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            console.log(data.typing);
+            if (data.typing === 'is typing') {
+                var x = data.typing + '\n';
+                function del() {
+                    document.querySelector('#chat-log').value -= x;
+                }
+                document.querySelector('#chat-log').value += x;
+                setTimeout(() => { del() }, 2000);
+                 }
+            else {
+                document.querySelector('#chat-log').value += (data.message + '\n');
+                 }
         };
 
         chatSocket.onclose = function(e) {
@@ -55,19 +53,18 @@
             const messageInputDom = document.querySelector('#chat-message-input');
             const message = messageInputDom.value;
             chatSocket.send(JSON.stringify({
+                'event': 'message',
                 'message': message,
             }));
             messageInputDom.value = '';
         };
 
-      const buttonElem = document.getElementById('myBtn');
-        let onButtonClick = function() {
-        const x = 'клик';
-        chatSocket.send(JSON.stringify({
-                'message': x,
+        document.querySelector('#chat-message-input').onkeypress = function(e) {
+            chatSocket.send(JSON.stringify({
+                'event': 'tp',
+                'message': 'is typing'
             }));
-        }
-        buttonElem.addEventListener('click', onButtonClick);
+        };
 
     </script>
 
