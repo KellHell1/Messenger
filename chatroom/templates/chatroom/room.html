@@ -8,6 +8,7 @@
 <body>
 
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+    <textarea id="typing-log" cols="100" rows="1"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>
     <input id="chat-message-submit" type="button" value="Send">
 
@@ -21,19 +22,22 @@
         );
 
 
+        let timer, timeoutVal = 2000;
+
+        const status = document.getElementById('typing-log');
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            console.log(data.typing);
-            if (data.typing === 'is typing') {
-                var x = data.typing + '\n';
-                function del() {
-                    document.querySelector('#chat-log').value -= x;
+            console.log(data);
+            if ('typing' in data) {
+                window.clearTimeout(timer);
+                status.innerHTML = 'Typing...';
+                window.clearTimeout(timer);
+	            timer = window.setTimeout(() => {
+  	            status.innerHTML = '';
+                }, timeoutVal);
                 }
-                document.querySelector('#chat-log').value += x;
-                setTimeout(() => { del() }, 2000);
-                 }
-            else {
+            if ('message' in data) {
                 document.querySelector('#chat-log').value += (data.message + '\n');
                  }
         };

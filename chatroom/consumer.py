@@ -50,7 +50,7 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         author = self.scope['user']
         message = event['message']
-
+        print(author)
         Message.objects.create(
             dialog=Dialog.objects.get(pk=self.scope['url_route']['kwargs']['room']),
             author=author,
