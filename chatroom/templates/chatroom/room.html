@@ -7,6 +7,10 @@
 
 <body>
 
+    <!--{% for x in messages %}
+        <p1> {{ x.author }}: {{ x.content }} </p1><br>
+    {% endfor  %}-->
+
     <textarea id="chat-log" cols="100" rows="20"></textarea><br>
     <textarea id="typing-log" cols="100" rows="1"></textarea><br>
     <input id="chat-message-input" type="text" size="100"><br>
@@ -22,7 +26,7 @@
         );
 
 
-        let timer, timeoutVal = 2000;
+        let timer, timeoutVal = 1500;
 
         const status = document.getElementById('typing-log');
 
@@ -60,12 +64,31 @@
                 'event': 'message',
                 'message': message,
             }));
+            showNotification(message);
             messageInputDom.value = '';
         };
 
+        function showNotification(message){
+            const notification = new Notification("New message!", {
+                body: message
+            });
+        }
+
+        console.log(Notification.permission);
+
+        if (Notification.permission === "granted") {
+            console.log(Notification.permission);
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    console.log(Notification.permission);
+                }
+            });
+        }
+
         document.querySelector('#chat-message-input').onkeypress = function(e) {
             chatSocket.send(JSON.stringify({
-                'event': 'tp',
+                'event': 'typing',
                 'message': 'is typing'
             }));
         };

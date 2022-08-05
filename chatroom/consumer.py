@@ -32,7 +32,7 @@ class ChatConsumer(WebsocketConsumer):
                     'message': message
                 }
             )
-        elif text_data_json['event'] == 'tp':
+        elif text_data_json['event'] == 'typing':
             message = text_data_json['message']
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -50,7 +50,6 @@ class ChatConsumer(WebsocketConsumer):
     def chat_message(self, event):
         author = self.scope['user']
         message = event['message']
-        print(author)
         Message.objects.create(
             dialog=Dialog.objects.get(pk=self.scope['url_route']['kwargs']['room']),
             author=author,

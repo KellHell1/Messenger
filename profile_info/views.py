@@ -4,9 +4,10 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from rest_framework.decorators import permission_classes, api_view
-from rest_framework.generics import UpdateAPIView, CreateAPIView
+from rest_framework.generics import UpdateAPIView, CreateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 
+from chatroom.serializers import DialogSerializer
 from chatroom.models import Dialog
 from friends.models import FriendRequest, FriendList
 from .models import ImageProfile
@@ -14,6 +15,7 @@ from .serializers import ImageProfileSerializer
 from jwt_auth.serializers import UserSerializer
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import parsers, status
 
 
 @swagger_auto_schema(
@@ -77,6 +79,15 @@ def account_view(request, **kwargs):
             image_model = ImageProfile.objects.get(owner=request.user)
             image = ImageProfileSerializer(image_model)
             context['image'] = image.data
+
+            dialog_req1 = Dialog.objects.filter(user1=request.user)
+            dialog1_serializers = DialogSerializer(dialog_req1, many=True)
+
+            dialog_req2 = Dialog.objects.filter(user2=request.user)
+            dialog2_serializers = DialogSerializer(dialog_req2, many=True)
+
+            context['dialogs'] = json.dumps(dialog1_serializers.data) + json.dumps(dialog2_serializers.data)
+
     else:
         print('ЗРАДА')
 
@@ -101,15 +112,19 @@ def search_user(request, username):
         return HttpResponse("User does not exist")
 
 
-def set_image(request):
-    pass
-
-
 class AddImage(CreateAPIView):
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.FileUploadParser)
     serializer_class = ImageProfileSerializer
     queryset = ImageProfile.objects.all()
 
 
 class ChangeImage(UpdateAPIView):
+    parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.FileUploadParser)
+    serializer_class = ImageProfileSerializer
+    queryset = ImageProfile.objects.all()
+
+
+class DeleteImage(DestroyAPIView):
+
     serializer_class = ImageProfileSerializer
     queryset = ImageProfile.objects.all()

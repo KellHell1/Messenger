@@ -23,9 +23,9 @@ def chat_room_view(request, **kwargs):
     context = {
         'dialog': Message.objects.filter(id=dialog_id),
         'dialog_id': dialog_id,
-        'status': 'УСПЕХ'
+        'status': 'УСПЕХ',
+        'messages': messages.data
     }
-
     # return HttpResponse({json.dumps(room_user.data),
     #                      json.dumps(messages.data)})
     return render(request, "chatroom/room.html", context)
