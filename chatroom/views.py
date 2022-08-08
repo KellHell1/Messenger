@@ -19,13 +19,16 @@ from drf_yasg import openapi
 def chat_room_view(request, **kwargs):
     dialog_id = kwargs['room']
     room_user = DialogSerializer(Dialog.objects.get(id=dialog_id))
-    messages = MessageSerializer(Message.objects.filter(dialog_id=dialog_id), many=True)
+    messages = Message.get_messages(dialog_id=dialog_id)
+
     context = {
-        'dialog': Message.objects.filter(id=dialog_id),
+        'dialog': room_user,
         'dialog_id': dialog_id,
         'status': 'УСПЕХ',
-        'messages': messages.data
+        'messages': messages
     }
+
+    # print(context['messages'])
     # return HttpResponse({json.dumps(room_user.data),
     #                      json.dumps(messages.data)})
     return render(request, "chatroom/room.html", context)

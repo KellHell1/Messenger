@@ -125,6 +125,5 @@ class ChangeImage(UpdateAPIView):
 
 
 class DeleteImage(DestroyAPIView):
-
     serializer_class = ImageProfileSerializer
     queryset = ImageProfile.objects.all()

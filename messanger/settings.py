@@ -131,6 +131,8 @@ DATABASES = {
     }
 }
 
+fernet_key = b'8kTPmr4_eRdOoZU5YJ16nyU3XH2Zkk8WH81xaaRe8Bg='
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
