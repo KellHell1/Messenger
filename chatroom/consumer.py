@@ -38,7 +38,8 @@ class ChatConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     'type': 'typing',
-                    'message': message
+                    'message': message,
+                    'user': self.scope['user']
                 }
             )
 

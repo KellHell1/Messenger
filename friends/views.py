@@ -23,8 +23,8 @@ from .serializers import FriendRequestSerializer, FriendListSerializer
 @permission_classes([IsAuthenticated])
 def send_friend_request(request, id):
     sender = request.user
-    a = FriendRequest.objects.create(sender=sender, receiver=User.objects.get(id=id))
-    serializer = FriendRequestSerializer(FriendRequest.objects.filter(id=a.id), many=True)
+    create_friend_request = FriendRequest.objects.create(sender=sender, receiver=User.objects.get(id=id))
+    serializer = FriendRequestSerializer(FriendRequest.objects.filter(id=create_friend_request.id), many=True)
 
     return HttpResponse({json.dumps(serializer.data, ensure_ascii=False).encode('utf8')})
 

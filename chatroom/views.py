@@ -28,10 +28,15 @@ def chat_room_view(request, **kwargs):
         'messages': messages
     }
 
+    return render(request, "chatroom/room.html", context)
     # print(context['messages'])
     # return HttpResponse({json.dumps(room_user.data),
     #                      json.dumps(messages.data)})
-    return render(request, "chatroom/room.html", context)
+    # try:
+    #     if Dialog.dialog_auth(dialog_id, user=request.user):
+    #         return render(request, "chatroom/room.html", context)
+    # except Exception:
+    #     return "YOU DONT HAVE PERMISSION TO REED THIS PAGE"
 
 
 @swagger_auto_schema(

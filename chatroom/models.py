@@ -15,6 +15,15 @@ class Dialog(models.Model):
     def __str__(self):
         return f'{self.user1.username} and {self.user2.username}'
 
+    def dialog_auth(pk, user):
+        print(type(user))
+        a = Dialog.objects.get(pk=pk)
+        user = User.objects.get(username=user)
+        if user == a.user1 or a.user2:
+            return True
+        else:
+            return False
+
 
 class Message(models.Model):
     dialog = models.ForeignKey(Dialog, null=True, blank=True, on_delete=models.CASCADE)
