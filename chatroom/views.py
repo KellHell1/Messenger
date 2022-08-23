@@ -11,11 +11,11 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 
-# @swagger_auto_schema(
-#     method='get',
-#     operation_description="get info of chat members and chat room messages by dialog_id(room)",
-#     )
-# @api_view(['GET'])
+@swagger_auto_schema(
+    method='get',
+    operation_description="get info of chat members and chat room messages by dialog_id(room)",
+    )
+@api_view(['GET'])
 def chat_room_view(request, **kwargs):
     dialog_id = kwargs['room']
     room_user = DialogSerializer(Dialog.objects.get(id=dialog_id))
@@ -28,10 +28,10 @@ def chat_room_view(request, **kwargs):
         'messages': messages
     }
 
-    return render(request, "chatroom/room.html", context)
+    # return render(request, "chatroom/room.html", context)
     # print(context['messages'])
-    # return HttpResponse({json.dumps(room_user.data),
-    #                      json.dumps(messages.data)})
+    return HttpResponse({json.dumps(room_user.data),
+                         json.dumps(messages.data)})
     # try:
     #     if Dialog.dialog_auth(dialog_id, user=request.user):
     #         return render(request, "chatroom/room.html", context)
