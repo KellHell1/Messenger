@@ -19,7 +19,7 @@ from drf_yasg import openapi
 def chat_room_view(request, **kwargs):
     dialog_id = kwargs['room']
     room_user = DialogSerializer(Dialog.objects.get(id=dialog_id))
-    messages = Message.get_messages(dialog_id=dialog_id)
+    messages = MessageSerializer(Message.get_messages(dialog_id), many='True')
 
     context = {
         'dialog': room_user,
@@ -27,7 +27,7 @@ def chat_room_view(request, **kwargs):
         'status': 'УСПЕХ',
         'messages': messages
     }
-
+    print(type(messages))
     # return render(request, "chatroom/room.html", context)
     # print(context['messages'])
     return HttpResponse({json.dumps(room_user.data),
@@ -36,7 +36,7 @@ def chat_room_view(request, **kwargs):
     #     if Dialog.dialog_auth(dialog_id, user=request.user):
     #         return render(request, "chatroom/room.html", context)
     # except Exception:
-    #     return "YOU DONT HAVE PERMISSION TO REED THIS PAGE"
+    #     return "YOU DON'T HAVE PERMISSION TO REED THIS PAGE"
 
 
 @swagger_auto_schema(

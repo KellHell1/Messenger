@@ -46,12 +46,16 @@ class Message(models.Model):
         )
 
     def get_messages(dialog_id):
-        lst = Message.objects.filter(dialog_id=dialog_id)[:10:-1]
+        message_list = Message.objects.filter(dialog_id=dialog_id)
 
-        for x in lst:
-            y = x.content
-            b = y.encode('utf-8')
-            c = fernet.decrypt(b).decode()
-            x.content = c
+        for elem in message_list:
+            one_message = elem.content
 
-        return lst
+            one_message_encode = one_message.encode('utf-8')
+
+            decrypt_message = fernet.decrypt(one_message_encode).decode()
+
+            elem.content = decrypt_message
+
+        # print(message_list)
+        return message_list
