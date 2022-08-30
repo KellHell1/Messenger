@@ -57,5 +57,4 @@ class Message(models.Model):
 
             elem.content = decrypt_message
 
-        # print(message_list)
         return message_list
