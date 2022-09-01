@@ -7,10 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, generics
-from rest_framework.decorators import api_view
-from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.renderers import JSONRenderer
 
 from .serializers import UserSerializer, ChangePasswordSerializer
 
@@ -74,6 +72,8 @@ class ChangePasswordView(generics.UpdateAPIView):
         return HttpResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def logout(request):
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout_request(request):
     logout(request)
     return HttpResponse("logout success")

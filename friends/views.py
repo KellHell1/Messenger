@@ -7,7 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
-from drf_yasg import openapi
 
 from .models import FriendRequest, FriendList
 from .serializers import FriendRequestSerializer, FriendListSerializer
